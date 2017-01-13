@@ -107,6 +107,8 @@ Public Class FilePackager
                 PackageStream.Read(TempData, 0, TempData.Length)
                 FileData.Add(TempData)
             Next
+            PackageStream.Close()
+            PackageStream.Dispose()
             GC.Collect()
             Return 0
         Catch ex As Exception
@@ -141,6 +143,7 @@ Public Class FilePackager
                 PackageStream.Flush() '每次处理一个文件的数据都要写入一次缓冲区的数据
             Next
             PackageStream.Close()
+            PackageStream.Dispose()
             GC.Collect()
             Return 0
         Catch ex As Exception
@@ -191,6 +194,15 @@ Public Class FilePackager
     End Function
 
     ''' <summary>
+    ''' 根据资源名称返回资源字节数据
+    ''' </summary>
+    ''' <param name="Name"></param>
+    ''' <returns></returns>
+    Public Function GetFileData(Name As String) As Byte()
+        Return GetFileData(FileName.IndexOf(Name))
+    End Function
+
+    ''' <summary>
     ''' 修改已经加入包的文件名称
     ''' </summary>
     ''' <param name="Index"></param>
@@ -206,6 +218,15 @@ Public Class FilePackager
     ''' <param name="Data"></param>
     Public Sub SetFileData(Index As Integer, Data As Byte())
         If (0 <= Index And Index < FileName.Count) Then FileData(Index) = Data
+    End Sub
+
+    ''' <summary>
+    ''' 根据文件名称修改文件数据
+    ''' </summary>
+    ''' <param name="Name"></param>
+    ''' <param name="Data"></param>
+    Public Sub SetFileData(Name As String, Data As Byte())
+        SetFileData(FileName.IndexOf(Name), Data)
     End Sub
 
     ''' <summary>
@@ -242,6 +263,14 @@ Public Class FilePackager
             FileData.Insert(Index, Data)
         End If
     End Sub
+
+    ''' <summary>
+    ''' 返回文件总数
+    ''' </summary>
+    ''' <returns></returns>
+    Public Function GetCount() As Integer
+        Return FileName.Count
+    End Function
 
     Public Sub PrintList()
         For Index As Integer = 0 To FileName.Count - 1
